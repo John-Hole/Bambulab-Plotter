@@ -1,11 +1,24 @@
 # Cache di Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# File generati di output (G-code e 3MF generati pesanti)
+# Ambienti virtuali Python
+.venv/
+venv/
+env/
+
+# File generati di output (G-code, 3MF e preview)
 output/
+*.gcode
+*.gcode.3mf
 
-# File di sistema / editor
+# File di configurazione e segreti
+.env
+
+# File di sistema ed editor
 .vscode/
 .idea/
 Thumbs.db
+desktop.ini
+.DS_Store

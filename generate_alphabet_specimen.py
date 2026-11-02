@@ -158,7 +158,7 @@ def build_alphabet_chart(font_path, output_png):
 
 
 def main():
-    base_dir = r'C:\Users\giova\.gemini\antigravity\scratch\bambu_a1_plotter'
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     font_path = os.path.join(base_dir, 'fonts', 'my_handwriting.json')
     table_png = os.path.join(base_dir, 'output', 'anteprima_tabella_alfabeto.png')
 

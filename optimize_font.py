@@ -166,7 +166,7 @@ def clean_character_strokes(char, strokes):
     return smoothed_strokes
 
 def main():
-    base_dir = r'C:\Users\giova\.gemini\antigravity\scratch\bambu_a1_plotter'
+    base_dir = os.path.dirname(os.path.abspath(__file__))
     raw_path = os.path.join(base_dir, 'fonts', 'my_handwriting_raw.json')
     font_path = os.path.join(base_dir, 'fonts', 'my_handwriting.json')
     source_path = raw_path if os.path.exists(raw_path) else font_path

@@ -59,48 +59,76 @@ def extract_from_vector_pdf(pdf_path, spec_path, output_font_path):
             
             char_strokes = []
             
+            # --- Source A: Vector drawings (Goodnotes, Notability, Freeform, vector PDF) ---
             for d in drawings:
-                # Ignore background or template strokes
                 d_rect = d.get('rect')
                 if not d_rect:
                     continue
                     
                 # Check if stroke is inside this cell
-                if (d_rect.x0 >= bx0 - 5.0 and d_rect.x1 <= bx1 + 5.0 and
-                    d_rect.y0 >= by0 - 5.0 and d_rect.y1 <= by1 + 5.0):
+                if not (d_rect.x0 >= bx0 - 5.0 and d_rect.x1 <= bx1 + 5.0 and
+                        d_rect.y0 >= by0 - 5.0 and d_rect.y1 <= by1 + 5.0):
+                    continue
                     
-                    # Check stroke color: user ink is usually dark
-                    color = d.get('color')
-                    fill = d.get('fill')
+                # Filter 1: Ignore fill rectangles (cell background, badges)
+                if d.get('fill') is not None and not d.get('color'):
+                    continue
                     
-                    # Check items (lines, curves)
-                    current_stroke = []
-                    for item in d.get('items', []):
-                        cmd = item[0]
-                        if cmd == 'l': # line (p1, p2)
-                            p1, p2 = item[1], item[2]
-                            if not current_stroke:
-                                current_stroke.append((p1.x, p1.y))
-                            current_stroke.append((p2.x, p2.y))
-                        elif cmd == 'c': # cubic curve (p1, p2, p3, p4)
-                            p1, p2, p3, p4 = item[1], item[2], item[3], item[4]
-                            sampled = sample_cubic_bezier((p1.x, p1.y), (p2.x, p2.y), (p3.x, p3.y), (p4.x, p4.y), steps=8)
-                            if current_stroke:
-                                current_stroke.extend(sampled[1:])
-                            else:
-                                current_stroke.extend(sampled)
+                # Filter 2: Ignore horizontal guidelines (dy < 0.1 and spans > 50% cell width)
+                dy_box = abs(d_rect.y1 - d_rect.y0)
+                dx_box = abs(d_rect.x1 - d_rect.x0)
+                if dy_box < 0.15 and dx_box > (cx1 - cx0) * 0.5:
+                    continue
                     
-                    if len(current_stroke) >= 2:
-                        # Convert to mm relative to baseline
-                        # In PDF, Y goes downwards from top of page
-                        stroke_mm = []
-                        for px, py in current_stroke:
-                            # x relative to cell left, in mm
-                            mx = round((px - cx0) * PT_TO_MM, 3)
-                            # y relative to baseline (positive upwards)
-                            my = round((c_base - py) * PT_TO_MM, 3)
-                            stroke_mm.append([mx, my])
-                        char_strokes.append(stroke_mm)
+                # Filter 3: Ignore template colors (light blues/greys)
+                color = d.get('color')
+                if color is not None and len(color) >= 3:
+                    # Template colors have high luminance (avg RGB > 0.65 or specific blue)
+                    lum = 0.299 * color[0] + 0.587 * color[1] + 0.114 * color[2]
+                    if lum > 0.65 or color == (0.23137299716472626, 0.5098040103912354, 0.9647060036659241):
+                        continue
+                
+                # Check items (lines, curves)
+                current_stroke = []
+                for item in d.get('items', []):
+                    cmd = item[0]
+                    if cmd == 'l': # line (p1, p2)
+                        p1, p2 = item[1], item[2]
+                        if not current_stroke:
+                            current_stroke.append((p1.x, p1.y))
+                        current_stroke.append((p2.x, p2.y))
+                    elif cmd == 'c': # cubic curve (p1, p2, p3, p4)
+                        p1, p2, p3, p4 = item[1], item[2], item[3], item[4]
+                        sampled = sample_cubic_bezier((p1.x, p1.y), (p2.x, p2.y), (p3.x, p3.y), (p4.x, p4.y), steps=8)
+                        if current_stroke:
+                            current_stroke.extend(sampled[1:])
+                        else:
+                            current_stroke.extend(sampled)
+                
+                if len(current_stroke) >= 2:
+                    stroke_mm = []
+                    for px, py in current_stroke:
+                        mx = round((px - cx0) * PT_TO_MM, 3)
+                        my = round((c_base - py) * PT_TO_MM, 3)
+                        stroke_mm.append([mx, my])
+                    char_strokes.append(stroke_mm)
+
+            # --- Source B: PDF Annotations (Apple Pencil in Files / Markup / Preview) ---
+            for annot in page.annots():
+                if annot.type[0] == fitz.PDF_ANNOT_INK:
+                    a_rect = annot.rect
+                    if (a_rect.x0 >= bx0 - 5.0 and a_rect.x1 <= bx1 + 5.0 and
+                        a_rect.y0 >= by0 - 5.0 and a_rect.y1 <= by1 + 5.0):
+                        for ink_stroke in annot.vertices:
+                            if len(ink_stroke) >= 2:
+                                stroke_mm = []
+                                for pt in ink_stroke:
+                                    px = pt[0] if isinstance(pt, (tuple, list)) else pt.x
+                                    py = pt[1] if isinstance(pt, (tuple, list)) else pt.y
+                                    mx = round((px - cx0) * PT_TO_MM, 3)
+                                    my = round((c_base - py) * PT_TO_MM, 3)
+                                    stroke_mm.append([mx, my])
+                                char_strokes.append(stroke_mm)
             
             if char_strokes:
                 # Calculate advance width and bounding box
