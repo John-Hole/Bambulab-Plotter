@@ -1,0 +1,950 @@
+{
+  "page_width_mm": 210.0,
+  "page_height_mm": 297.0,
+  "fiducials_mm": [
+    {
+      "name": "top_left",
+      "x": 6.0,
+      "y": 6.0
+    },
+    {
+      "name": "top_right",
+      "x": 195.0,
+      "y": 6.0
+    },
+    {
+      "name": "bottom_left",
+      "x": 6.0,
+      "y": 282.0
+    },
+    {
+      "name": "bottom_right",
+      "x": 195.0,
+      "y": 282.0
+    }
+  ],
+  "grid": {
+    "start_x_mm": 16.0,
+    "start_y_mm": 46.0,
+    "cell_width_mm": 13.6,
+    "cell_height_mm": 28.0,
+    "rows": 7,
+    "cols": 13,
+    "baseline_from_cell_bottom_mm": 10.0,
+    "x_height_from_cell_bottom_mm": 17.0,
+    "cap_height_from_cell_bottom_mm": 23.0,
+    "descender_from_cell_bottom_mm": 4.0
+  },
+  "cells": [
+    {
+      "char": "A",
+      "row": 0,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "B",
+      "row": 0,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "C",
+      "row": 0,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "D",
+      "row": 0,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "E",
+      "row": 0,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "F",
+      "row": 0,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "G",
+      "row": 0,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "H",
+      "row": 0,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "I",
+      "row": 0,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "J",
+      "row": 0,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "K",
+      "row": 0,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "L",
+      "row": 0,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "M",
+      "row": 0,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 46.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 64.0
+    },
+    {
+      "char": "N",
+      "row": 1,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "O",
+      "row": 1,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "P",
+      "row": 1,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "Q",
+      "row": 1,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "R",
+      "row": 1,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "S",
+      "row": 1,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "T",
+      "row": 1,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "U",
+      "row": 1,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "V",
+      "row": 1,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "W",
+      "row": 1,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "X",
+      "row": 1,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "Y",
+      "row": 1,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "Z",
+      "row": 1,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 74.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 92.0
+    },
+    {
+      "char": "a",
+      "row": 2,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "b",
+      "row": 2,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "c",
+      "row": 2,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "d",
+      "row": 2,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "e",
+      "row": 2,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "f",
+      "row": 2,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "g",
+      "row": 2,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "h",
+      "row": 2,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "i",
+      "row": 2,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "j",
+      "row": 2,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "k",
+      "row": 2,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "l",
+      "row": 2,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "m",
+      "row": 2,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 102.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 120.0
+    },
+    {
+      "char": "n",
+      "row": 3,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "o",
+      "row": 3,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "p",
+      "row": 3,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "q",
+      "row": 3,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "r",
+      "row": 3,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "s",
+      "row": 3,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "t",
+      "row": 3,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "u",
+      "row": 3,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "v",
+      "row": 3,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "w",
+      "row": 3,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "x",
+      "row": 3,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "y",
+      "row": 3,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "z",
+      "row": 3,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 130.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 148.0
+    },
+    {
+      "char": "0",
+      "row": 4,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "1",
+      "row": 4,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "2",
+      "row": 4,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "3",
+      "row": 4,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "4",
+      "row": 4,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "5",
+      "row": 4,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "6",
+      "row": 4,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "7",
+      "row": 4,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "8",
+      "row": 4,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": "9",
+      "row": 4,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": ".",
+      "row": 4,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": ",",
+      "row": 4,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": ";",
+      "row": 4,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 158.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 176.0
+    },
+    {
+      "char": ":",
+      "row": 5,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "!",
+      "row": 5,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "?",
+      "row": 5,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "'",
+      "row": 5,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "\"",
+      "row": 5,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "(",
+      "row": 5,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": ")",
+      "row": 5,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "-",
+      "row": 5,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "+",
+      "row": 5,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "=",
+      "row": 5,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "à",
+      "row": 5,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "è",
+      "row": 5,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "é",
+      "row": 5,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 186.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 204.0
+    },
+    {
+      "char": "ì",
+      "row": 6,
+      "col": 0,
+      "x_mm": 16.0,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "ò",
+      "row": 6,
+      "col": 1,
+      "x_mm": 29.6,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "ù",
+      "row": 6,
+      "col": 2,
+      "x_mm": 43.2,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "À",
+      "row": 6,
+      "col": 3,
+      "x_mm": 56.8,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "È",
+      "row": 6,
+      "col": 4,
+      "x_mm": 70.4,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "É",
+      "row": 6,
+      "col": 5,
+      "x_mm": 84.0,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "€",
+      "row": 6,
+      "col": 6,
+      "x_mm": 97.6,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "/",
+      "row": 6,
+      "col": 7,
+      "x_mm": 111.2,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "«",
+      "row": 6,
+      "col": 8,
+      "x_mm": 124.8,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "»",
+      "row": 6,
+      "col": 9,
+      "x_mm": 138.4,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "_",
+      "row": 6,
+      "col": 10,
+      "x_mm": 152.0,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "*",
+      "row": 6,
+      "col": 11,
+      "x_mm": 165.6,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    },
+    {
+      "char": "%",
+      "row": 6,
+      "col": 12,
+      "x_mm": 179.2,
+      "y_top_mm": 214.0,
+      "width_mm": 13.6,
+      "height_mm": 28.0,
+      "baseline_y_mm": 232.0
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# Cache di Python
+__pycache__/
+*.pyc
+
+# File generati di output (G-code e 3MF generati pesanti)
+output/
+
+# File di sistema / editor
+.vscode/
+.idea/
+Thumbs.db

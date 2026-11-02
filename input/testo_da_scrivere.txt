@@ -1,0 +1,10 @@
+Appunti di Fisica Generale - I Principi della Dinamica
+
+1. Il primo principio (Principio di Inerzia):
+Un corpo persevera nel suo stato di quiete o di moto rettilineo uniforme finché non interviene una forza esterna a modificare tale stato.
+
+2. Il secondo principio (Legge Fondamentale):
+L'accelerazione di un corpo è direttamente proporzionale alla forza risultante che agisce su di esso e inversamente proporzionale alla sua massa: F = m · a.
+
+3. Il terzo principio (Azione e Reazione):
+A ogni azione corrisponde sempre una reazione uguale e contraria; le interazioni reciproche di due corpi l'uno sull'altro sono sempre uguali e dirette verso parti opposte.
