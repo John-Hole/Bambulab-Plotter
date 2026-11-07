@@ -195,6 +195,13 @@ class NotebookLayout:
         self.usable_height = self.nb_h - self.margin_top - self.margin_bottom
         self.max_lines = int(math.floor(self.usable_height / self.line_spacing))
 
+        # Clamp max_lines to ensure baseline and descenders never exceed physical Bambu bed (Y >= 5.0 mm)
+        first_line_y = (self.nb_y + self.nb_h) - self.margin_top
+        min_safe_baseline = 14.0  # mm, ensures descenders stay strictly above 5.0 mm limit
+        if first_line_y > min_safe_baseline:
+            max_bed_lines = int(math.floor((first_line_y - min_safe_baseline) / self.line_spacing)) + 1
+            self.max_lines = min(self.max_lines, max_bed_lines)
+
     def get_line_baseline_y(self, line_index: int) -> float:
         """Returns bed Y coordinate (in mm) for the baseline of line_index (0-based)."""
         # Top of notebook on bed is (nb_y + nb_h)
@@ -220,7 +227,7 @@ class NotebookLayout:
                 continue
             s0 = raw_strokes[0]
             p_entry = s0[0]
-            p_exit = raw_strokes[-1][-1]
+            p_exit = s0[-1]
             adv = adv_units * self.scale
 
             prev_is_lower = prev_char is not None and (prev_char.islower() or prev_char in 'àèéìòù')
@@ -228,10 +235,10 @@ class NotebookLayout:
             if is_cursive:
                 target_dx = 0.35
                 match_x = prev_exit[0] - p_entry[0] * self.scale + target_dx
-                min_x_prev = prev_char_x + min([p[0] for s in prev_raw for p in s]) * self.scale
-                min_x_curr = min([p[0] for s in raw_strokes for p in s]) * self.scale
-                min_adv = min_x_prev + 3.0 * self.scale - min_x_curr
-                char_x = max(match_x, min_adv)
+                prev_max_x = prev_char_x + max([p[0] for s in prev_raw for p in s]) * self.scale
+                curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
+                min_adv = max(prev_char_x + 1.5, prev_max_x - curr_min_x + 0.25)
+                char_x = max(match_x, min_adv, cur_x)
             else:
                 char_x = cur_x
 
@@ -313,18 +320,34 @@ class NotebookLayout:
 
                     s0 = raw_strokes[0]
                     p_entry = s0[0]
-                    p_exit = raw_strokes[-1][-1]
+                    p_exit = s0[-1]
 
                     prev_is_lower = prev_char is not None and (prev_char.islower() or prev_char in 'àèéìòù')
                     is_cursive_lower = (char.islower() or char in 'àèéìòù') and prev_is_lower and (prev_exit is not None)
 
+                    # Authentic calligraphy pen-lift rules:
+                    # 1. Oval letters starting at waist counter (a, o, c, d, g, q) when preceded by baseline exit
+                    # 2. Steep vertical step (dy > 1.2 mm) to prevent cross-cutting diagonals
+                    TOP_ENTRY_CHARS = set('aocdgqàò')
+                    wants_pen_lift = False
                     if is_cursive_lower:
+                        if char in TOP_ENTRY_CHARS and (p_entry[1] * self.scale >= 1.2) and (prev_exit[1] - baseline_y <= 1.0):
+                            wants_pen_lift = True
+                        elif prev_exit is not None and abs(p_entry[1] * self.scale - (prev_exit[1] - baseline_y)) > 1.2:
+                            wants_pen_lift = True
+
+                    if is_cursive_lower and not wants_pen_lift:
                         target_dx = 0.35  # mm natural forward step
                         match_x = prev_exit[0] - p_entry[0] * self.scale + target_dx
-                        min_x_prev = prev_char_bed_x + min([p[0] for s in prev_raw_strokes for p in s]) * self.scale
-                        min_x_curr = min([p[0] for s in raw_strokes for p in s]) * self.scale
-                        min_adv = min_x_prev + 3.0 * self.scale - min_x_curr
-                        char_bed_x = max(match_x, min_adv)
+                        prev_max_x = prev_char_bed_x + max([p[0] for s in prev_raw_strokes for p in s]) * self.scale
+                        curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
+                        min_adv = max(prev_char_bed_x + 1.5, prev_max_x - curr_min_x + 0.25)
+                        char_bed_x = max(match_x, min_adv, current_line_x)
+                    elif prev_char_bed_x is not None and prev_raw_strokes is not None:
+                        # Natural inter-letter spacing with pen lift inside a word
+                        prev_max_x = prev_char_bed_x + max([p[0] for s in prev_raw_strokes for p in s]) * self.scale
+                        curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
+                        char_bed_x = max(prev_max_x - curr_min_x + 0.40, current_line_x)
                     else:
                         char_bed_x = current_line_x
 
@@ -378,16 +401,28 @@ class NotebookLayout:
                         bed_char_strokes.sort(key=len, reverse=True)
                         primary_s = bed_char_strokes[0]
                         extra_s = bed_char_strokes[1:]
-                        word_secondary_strokes.extend(extra_s)
+                        if char in ['i', 'j', 't', 'à', 'è', 'é', 'ì', 'ò', 'ù', 'z', 'Z']:
+                            word_secondary_strokes.extend(extra_s)
+                        else:
+                            for es in extra_s:
+                                current_page_strokes.append({
+                                    "type": "stroke",
+                                    "line_idx": current_line_idx,
+                                    "char": char,
+                                    "points": es
+                                })
 
-                        if word_body_stroke:
+                        if word_body_stroke and not wants_pen_lift:
                             p_curr_exit = word_body_stroke[-1]
                             p_curr_entry = primary_s[0]
                             dx = p_curr_entry[0] - p_curr_exit[0]
+                            dy = abs(p_curr_entry[1] - p_curr_exit[1])
 
-                            if -0.2 <= dx <= 3.5:
-                                # Smooth natural connection:
-                                # If there is a small gap (0.15 to 3.5 mm), add a smooth scoop at baseline
+                            exit_valid = -1.0 <= (p_curr_exit[1] - baseline_y) <= 4.5
+                            entry_valid = -1.0 <= (p_curr_entry[1] - baseline_y) <= 4.5
+
+                            if (-0.2 <= dx <= 4.0) and (dy <= 1.2) and exit_valid and entry_valid:
+                                # Smooth natural cursive ligature
                                 if dx > 0.15:
                                     scoop_y = min(p_curr_exit[1], p_curr_entry[1], baseline_y + 1.2 * self.scale)
                                     mid = (round(p_curr_exit[0] + 0.5 * dx, 3), round(scoop_y, 3))
@@ -397,11 +432,18 @@ class NotebookLayout:
                                 current_page_strokes.append({
                                     "type": "stroke",
                                     "line_idx": current_line_idx,
-                                    "char": char,
+                                    "char": prev_char if prev_char else "word_body",
                                     "points": word_body_stroke
                                 })
                                 word_body_stroke = list(primary_s)
                         else:
+                            if word_body_stroke:
+                                current_page_strokes.append({
+                                    "type": "stroke",
+                                    "line_idx": current_line_idx,
+                                    "char": prev_char if prev_char else "word_body",
+                                    "points": word_body_stroke
+                                })
                             word_body_stroke = list(primary_s)
                     else:
                         # Non-lowercase (uppercase, digit, punctuation)
@@ -1103,7 +1145,7 @@ def main():
             PreviewRenderer.render_png(layout, strokes, cur_png)
             try:
                 import shutil
-                user_dl = os.path.expanduser(r'~\Downloads\anteprima_quaderno_reale.png')
+                user_dl = os.path.join(os.path.expanduser('~'), 'Downloads', 'anteprima_quaderno_reale.png')
                 shutil.copyfile(cur_png, user_dl)
                 print(f"Anteprima fotorealistica quaderno salvata in Download: {user_dl}")
             except Exception as e:
@@ -1113,11 +1155,32 @@ def main():
             PreviewRenderer.render_svg(layout, strokes, cur_svg)
 
         # Bambu Lab .gcode.3mf container for direct SD card touchscreen printing
+        out_3mf = None
         if not args.no_3mf:
             base_no_ext = cur_gcode[:-6] if cur_gcode.endswith(".gcode") else cur_gcode
             out_3mf = f"{base_no_ext}.gcode.3mf"
             package_gcode_3mf(cur_gcode, out_3mf, cur_png if os.path.exists(cur_png) else None)
             print(f"Bambu 3MF pacchetto salvato: {out_3mf}")
+
+        # Automatic synchronization to Google Drive "2 | Second Brain/Scrittura"
+        gdrive_dir = "/home/buco-py/GoogleDrive/2 | Second Brain/Scrittura"
+        if os.path.exists(gdrive_dir):
+            try:
+                import shutil
+                gd_gcode = os.path.join(gdrive_dir, os.path.basename(cur_gcode))
+                shutil.copyfile(cur_gcode, gd_gcode)
+                if out_3mf and os.path.exists(out_3mf):
+                    gd_3mf = os.path.join(gdrive_dir, os.path.basename(out_3mf))
+                    shutil.copyfile(out_3mf, gd_3mf)
+                if cur_png and os.path.exists(cur_png):
+                    gd_png = os.path.join(gdrive_dir, os.path.basename(cur_png))
+                    shutil.copyfile(cur_png, gd_png)
+                if cur_svg and os.path.exists(cur_svg):
+                    gd_svg = os.path.join(gdrive_dir, os.path.basename(cur_svg))
+                    shutil.copyfile(cur_svg, gd_svg)
+                print(f"Sincronizzato automaticamente su Google Drive: {gdrive_dir}")
+            except Exception as e:
+                print(f"Avviso sincronizzazione Google Drive: {e}")
 
 
 if __name__ == '__main__':

@@ -144,112 +144,186 @@ class SkeletonTracer:
     ]
 
     @classmethod
-    def trace(cls, skel_mask: np.ndarray, rdp_epsilon: float = 0.8) -> List[List[Tuple[float, float]]]:
-        """Traces skeleton pixels into ordered polylines."""
-        h, w = skel_mask.shape
-        visited = np.zeros_like(skel_mask, dtype=bool)
+    def crossing_number(cls, s: np.ndarray, r: int, c: int) -> int:
+        """Computes the digital crossing number (connectivity number) of pixel (r, c)."""
+        h, w = s.shape
+        cyclic = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
+        vals = [1 if (0 <= r + dr < h and 0 <= c + dc < w and s[r + dr, c + dc]) else 0 for dr, dc in cyclic]
+        vals.append(vals[0])
+        return sum(1 for i in range(8) if vals[i] == 0 and vals[i + 1] == 1)
 
-        pixels = list(zip(*np.where(skel_mask)))
-        if not pixels:
-            return []
+    @classmethod
+    def thin_redundant(cls, skel_mask: np.ndarray) -> np.ndarray:
+        """Removes redundant 8-connected triangle pixels to expose true endpoints."""
+        s = skel_mask.copy()
+        h, w = s.shape
+        changed = True
+        while changed:
+            changed = False
+            for r, c in list(zip(*np.where(s))):
+                nbrs = [
+                    (r + dr, c + dc) for dr, dc in cls.NEIGHBORS
+                    if 0 <= r + dr < h and 0 <= c + dc < w and s[r + dr, c + dc]
+                ]
+                if len(nbrs) == 2:
+                    p1, p2 = nbrs
+                    if max(abs(p1[0] - p2[0]), abs(p1[1] - p2[1])) == 1:
+                        s[r, c] = False
+                        changed = True
+        return s
 
-        # Calculate degree of each pixel
-        degree = np.zeros((h, w), dtype=int)
-        for r, c in pixels:
-            cnt = 0
-            for dr, dc in cls.NEIGHBORS:
-                nr, nc = r + dr, c + dc
-                if 0 <= nr < h and 0 <= nc < w and skel_mask[nr, nc]:
-                    cnt += 1
-            degree[r, c] = cnt
-
-        strokes = []
-
-        # 1. Trace from stroke endpoints (degree 1)
-        endpoints = [(r, c) for (r, c) in pixels if degree[r, c] == 1]
-        endpoints.sort(key=lambda p: (p[0], p[1]))
-
-        for r0, c0 in endpoints:
-            if visited[r0, c0]:
-                continue
-            stroke_pts = [(float(c0), float(r0))]
-            visited[r0, c0] = True
-            curr_r, curr_c = r0, c0
-
-            while True:
-                cand = []
-                for dr, dc in cls.NEIGHBORS:
-                    nr, nc = curr_r + dr, curr_c + dc
-                    if 0 <= nr < h and 0 <= nc < w and skel_mask[nr, nc] and not visited[nr, nc]:
-                        cand.append((nr, nc))
-                if not cand:
-                    # Close 1-pixel gap to adjacent visited junction if present
-                    for dr, dc in cls.NEIGHBORS:
-                        nr, nc = curr_r + dr, curr_c + dc
-                        if 0 <= nr < h and 0 <= nc < w and skel_mask[nr, nc] and degree[nr, nc] >= 3:
-                            if (float(nc), float(nr)) != stroke_pts[-1]:
-                                stroke_pts.append((float(nc), float(nr)))
-                            break
-                    break
-
-                # If multiple paths, choose smoothest continuation
-                if len(cand) == 1:
-                    next_pt = cand[0]
-                else:
-                    if len(stroke_pts) >= 2:
-                        prev_c, prev_r = stroke_pts[-2]
-                        vx, vy = curr_c - prev_c, curr_r - prev_r
-                        v_norm = math.hypot(vx, vy)
-                        best_dot, best_cand = -999, cand[0]
-                        for c_r, c_c in cand:
-                            cx, cy = c_c - curr_c, c_r - curr_r
-                            c_norm = math.hypot(cx, cy)
-                            if c_norm > 0 and v_norm > 0:
-                                dot = (vx * cx + vy * cy) / (v_norm * c_norm)
+    @classmethod
+    def prune_spurs(cls, skel_mask: np.ndarray, max_len: int = 4) -> np.ndarray:
+        """Prunes dead-end micro-spurs <= max_len pixels attached to junctions without destroying main strokes."""
+        s = cls.thin_redundant(skel_mask)
+        h, w = s.shape
+        changed = True
+        while changed:
+            changed = False
+            pixels = list(zip(*np.where(s)))
+            eps = [p for p in pixels if cls.crossing_number(s, p[0], p[1]) == 1]
+            for ep in eps:
+                curr = ep
+                prev = None
+                path = [curr]
+                for _ in range(max_len + 1):
+                    nbrs = [
+                        (curr[0] + dr, curr[1] + dc) for dr, dc in cls.NEIGHBORS
+                        if 0 <= curr[0] + dr < h and 0 <= curr[1] + dc < w and s[curr[0] + dr, curr[1] + dc] and (curr[0] + dr, curr[1] + dc) != prev
+                    ]
+                    if cls.crossing_number(s, curr[0], curr[1]) >= 3 and curr != ep:
+                        break
+                    if not nbrs:
+                        break
+                    if len(nbrs) == 1:
+                        nxt = nbrs[0]
+                    else:
+                        if prev is not None:
+                            vx, vy = curr[1] - prev[1], curr[0] - prev[0]
+                            v_norm = math.hypot(vx, vy)
+                            best_dot, best_cand = -999, nbrs[0]
+                            for c_r, c_c in nbrs:
+                                cx, cy = c_c - curr[1], c_r - curr[0]
+                                c_norm = math.hypot(cx, cy)
+                                dot = (vx * cx + vy * cy) / (v_norm * c_norm) if (v_norm * c_norm > 0) else 0
                                 if dot > best_dot:
                                     best_dot = dot
                                     best_cand = (c_r, c_c)
-                        next_pt = best_cand
-                    else:
-                        next_pt = cand[0]
+                            nxt = best_cand
+                        else:
+                            nxt = nbrs[0]
+                    prev = curr
+                    curr = nxt
+                    path.append(curr)
 
-                visited[next_pt[0], next_pt[1]] = True
-                stroke_pts.append((float(next_pt[1]), float(next_pt[0])))
-                curr_r, curr_c = next_pt
+                if cls.crossing_number(s, curr[0], curr[1]) >= 3 and curr != ep and len(path) <= max_len + 1:
+                    total_b = cls.crossing_number(s, curr[0], curr[1])
+                    if total_b > 2:
+                        for p in path[:-1]:
+                            s[p[0], p[1]] = False
+                        changed = True
+                        break
+        return s
 
-            if stroke_pts:
-                strokes.append(stroke_pts)
+    @classmethod
+    def trace(cls, skel_mask: np.ndarray, rdp_epsilon: float = 0.8) -> List[List[Tuple[float, float]]]:
+        """Traces skeleton pixels into ordered polylines with robust junction continuation."""
+        if not np.any(skel_mask):
+            return []
 
-        # 2. Trace remaining unvisited pixels (e.g. closed loops or isolated dots)
-        unvisited = [(r, c) for (r, c) in pixels if not visited[r, c]]
-        unvisited.sort(key=lambda p: (p[0], p[1]))
+        skel = cls.prune_spurs(skel_mask, max_len=6)
+        h, w = skel.shape
+        visited = np.zeros_like(skel, dtype=bool)
 
-        for r0, c0 in unvisited:
-            if visited[r0, c0]:
-                continue
-            stroke_pts = [(float(c0), float(r0))]
-            visited[r0, c0] = True
-            curr_r, curr_c = r0, c0
-
+        def trace_from(start_pt: Tuple[int, int]) -> List[Tuple[float, float]]:
+            stroke = [start_pt]
+            visited[start_pt[0], start_pt[1]] = True
+            curr_r, curr_c = start_pt
             while True:
-                cand = []
-                for dr, dc in cls.NEIGHBORS:
-                    nr, nc = curr_r + dr, curr_c + dc
-                    if 0 <= nr < h and 0 <= nc < w and skel_mask[nr, nc] and not visited[nr, nc]:
-                        cand.append((nr, nc))
+                cand = [
+                    (curr_r + dr, curr_c + dc) for dr, dc in cls.NEIGHBORS
+                    if 0 <= curr_r + dr < h and 0 <= curr_c + dc < w and skel[curr_r + dr, curr_c + dc] and not visited[curr_r + dr, curr_c + dc]
+                ]
                 if not cand:
+                    # 1-hop and 2-hop continuation across visited crossings
+                    k = min(15, len(stroke))
+                    prev_r, prev_c = stroke[-k]
+                    vx, vy = curr_c - prev_c, curr_r - prev_r
+                    v_norm = math.hypot(vx, vy)
+                    best_dot = 0.2
+                    best_step = None
+                    for dr, dc in cls.NEIGHBORS:
+                        jr, jc = curr_r + dr, curr_c + dc
+                        if not (0 <= jr < h and 0 <= jc < w and skel[jr, jc]):
+                            continue
+                        for jdr, jdc in cls.NEIGHBORS:
+                            ur, uc = jr + jdr, jc + jdc
+                            if 0 <= ur < h and 0 <= uc < w and skel[ur, uc] and not visited[ur, uc]:
+                                cx, cy = uc - curr_c, ur - curr_r
+                                c_norm = math.hypot(cx, cy)
+                                if c_norm > 0 and v_norm > 0:
+                                    dot = (vx * cx + vy * cy) / (v_norm * c_norm)
+                                    if dot > best_dot:
+                                        best_dot = dot
+                                        best_step = (ur, uc)
+                    if best_step is not None:
+                        visited[best_step[0], best_step[1]] = True
+                        curr_r, curr_c = best_step
+                        stroke.append((curr_r, curr_c))
+                        continue
                     break
-                next_pt = cand[0]
+
+                if len(cand) == 1:
+                    next_pt = cand[0]
+                else:
+                    k = min(15, len(stroke))
+                    prev_r, prev_c = stroke[-k]
+                    vx, vy = curr_c - prev_c, curr_r - prev_r
+                    v_norm = math.hypot(vx, vy)
+                    best_dot, best_cand = -999, cand[0]
+                    for c_r, c_c in cand:
+                        cx, cy = c_c - curr_c, c_r - curr_r
+                        c_norm = math.hypot(cx, cy)
+                        dot = (vx * cx + vy * cy) / (v_norm * c_norm) if (v_norm * c_norm > 0) else 0
+                        if dot > best_dot:
+                            best_dot = dot
+                            best_cand = (c_r, c_c)
+                    next_pt = best_cand
+
                 visited[next_pt[0], next_pt[1]] = True
-                stroke_pts.append((float(next_pt[1]), float(next_pt[0])))
                 curr_r, curr_c = next_pt
+                stroke.append((curr_r, curr_c))
 
-            if stroke_pts:
-                strokes.append(stroke_pts)
+            return [(float(p[1]), float(p[0])) for p in stroke]
 
-        # 3. Simplify polylines using RDP (preserving single-point dots)
-        simplified_strokes = []
+        pixels = list(zip(*np.where(skel)))
+        eps = [p for p in pixels if cls.crossing_number(skel, p[0], p[1]) == 1]
+        eps.sort(key=lambda p: (p[1], -p[0]))
+
+        strokes = []
+        for ep in eps:
+            if not visited[ep[0], ep[1]]:
+                strokes.append(trace_from(ep))
+
+        while np.any(skel & (~visited)):
+            unvisited = list(zip(*np.where(skel & (~visited))))
+            if strokes:
+                last_c, last_r = strokes[-1][-1]
+                unvisited.sort(key=lambda p: math.hypot(p[0] - last_r, p[1] - last_c))
+            else:
+                unvisited.sort(key=lambda p: (p[1], -p[0]))
+            strokes.append(trace_from(unvisited[0]))
+
+        # Filter out remnant 1-pixel spurs at junctions
+        valid_strokes = []
         for s in strokes:
+            if len(s) == 1 and cls.crossing_number(skel, int(round(s[0][1])), int(round(s[0][0]))) >= 3:
+                continue
+            valid_strokes.append(s)
+
+        # Simplify polylines using RDP (preserving single-point dots)
+        simplified_strokes = []
+        for s in valid_strokes:
             if len(s) == 1:
                 simplified_strokes.append([(float(s[0][0]), float(s[0][1]))])
             elif len(s) >= 2:

@@ -165,9 +165,19 @@ def main():
     build_alphabet_chart(font_path, table_png)
 
     # Copy to Downloads
-    user_dl = os.path.expanduser(r'~\Downloads\anteprima_tabella_alfabeto.png')
+    user_dl = os.path.join(os.path.expanduser('~'), 'Downloads', 'anteprima_tabella_alfabeto.png')
     shutil.copyfile(table_png, user_dl)
     print(f"Copiata in Download: {user_dl}")
+
+    # Copy to Google Drive "2 | Second Brain/Scrittura"
+    gdrive_dir = "/home/buco-py/GoogleDrive/2 | Second Brain/Scrittura"
+    if os.path.exists(gdrive_dir):
+        try:
+            gd_png = os.path.join(gdrive_dir, "anteprima_tabella_alfabeto.png")
+            shutil.copyfile(table_png, gd_png)
+            print(f"Copiata su Google Drive: {gd_png}")
+        except Exception as e:
+            print(f"Avviso sincronizzazione Google Drive: {e}")
 
 if __name__ == '__main__':
     main()

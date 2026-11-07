@@ -55,5 +55,6 @@ def upload_file(local_path, remote_filename=None, host='192.168.1.25', port=990,
     return True
 
 if __name__ == '__main__':
-    target = sys.argv[1] if len(sys.argv) > 1 else r'C:\Users\giova\.gemini\antigravity\scratch\bambu_a1_plotter\output\prova_calligrafia.gcode.3mf'
+    default_target = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output', 'pagina_quaderno.gcode.3mf')
+    target = sys.argv[1] if len(sys.argv) > 1 else default_target
     upload_file(target)
