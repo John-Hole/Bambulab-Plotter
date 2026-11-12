@@ -292,6 +292,38 @@ def clean_character_strokes(char, strokes):
         ]
         chained_body = [r_chain]
         remaining = []
+    elif char == 'v':
+        # Authentic Italian cursive lowercase 'v':
+        # Single smooth cup:
+        # 1. Entry stroke curving up to left shoulder at waist (x~13.0, y~2.0 -> x~14.0, y~3.65)
+        # 2. Smooth descent into rounded cup on baseline (x~15.2, y~0.70 -> x~15.9, y~0.75)
+        # 3. Ascent to right waist crest (x~17.2, y~3.70)
+        # 4. Horizontal exit arm at waist (x~17.8, y~3.75 -> x~18.6, y~3.80)
+        # Eliminates false double-hump (no m/n confusion in avea)
+        v_chain = [
+            [13.00, 2.00], [13.40, 2.85], [14.00, 3.65], [14.60, 2.40],
+            [15.20, 0.70], [15.90, 0.75], [16.60, 2.20], [17.20, 3.70],
+            [17.80, 3.75], [18.60, 3.80]
+        ]
+        chained_body = [v_chain]
+        remaining = []
+    elif char == 'T':
+        # Authentic Italian cursive capital 'T':
+        # 2 independent strokes:
+        # 1. Cappello ondulato superiore (wavy horizontal roof)
+        # 2. Asta centrale discendente con ricciolo calligrafico alla base
+        # Eliminates awkward backward diagonal tau/7 zigzag
+        T_roof = [
+            [7.00, 9.10], [8.20, 9.60], [9.50, 9.75], [11.00, 9.40],
+            [12.50, 9.35], [14.00, 9.65], [15.50, 9.70], [16.20, 9.20]
+        ]
+        T_stem = [
+            [11.60, 9.20], [11.50, 7.50], [11.30, 5.00], [11.10, 2.80],
+            [10.90, 1.20], [10.60, 0.70], [9.80, 0.65], [9.00, 0.90],
+            [8.50, 1.50], [8.60, 2.00]
+        ]
+        chained_body = [T_roof, T_stem]
+        remaining = []
     elif char == 'd' and len(body_strokes) >= 2:
         s_asc = max(body_strokes, key=lambda s: max(p[1] for p in s))
         s_exit = max(body_strokes, key=lambda s: max(p[0] for p in s))
@@ -720,7 +752,7 @@ def clean_character_strokes(char, strokes):
             
             # Cursive lowercase MUST enter at left and exit at right near baseline
             if (char.islower() or char in 'àèéìòù'):
-                if char in ['y', 'k', 'h', 'm', 'ò', 'z']:
+                if char in ['y', 'k', 'h', 'm', 'ò', 'z', 'v']:
                     continue
                 if s_idx == 0:
                     if p_start[1] < -1.0 and p_end[1] >= 0.0:
@@ -730,12 +762,12 @@ def clean_character_strokes(char, strokes):
                     elif p_start[1] > 3.0 and p_end[1] <= 2.0 and p_start[0] > p_end[0] - 1.0:
                         should_reverse = True
             elif char.isupper():
-                if char in ['H', 'R', 'G']:
+                if char in ['H', 'R', 'G', 'T']:
                     continue
                 # Uppercase letters: if stroke starts near baseline and ends near top, reverse to draw top-down
                 if p_start[1] < p_end[1] - 2.5:
                     should_reverse = True
-                elif char in ['C', 'E', 'I', 'J', 'T', 'L'] and p_start[1] < 4.0 and p_end[1] > 12.0:
+                elif char in ['C', 'E', 'I', 'J', 'L'] and p_start[1] < 4.0 and p_end[1] > 12.0:
                     should_reverse = True
             elif char.isdigit() and p_start[1] < p_end[1] - 2.0:
                 should_reverse = True
@@ -752,9 +784,11 @@ def clean_character_strokes(char, strokes):
         if len(s) > 2:
             if char == 'm':
                 s_smooth = rdp_simplify(s, epsilon=0.04)
+            elif char == 'v':
+                s_smooth = rdp_simplify(s, epsilon=0.04)
             elif char == 'h':
                 s_smooth = rdp_simplify(s, epsilon=0.06)
-            elif char in ['H', 'R', 'G']:
+            elif char in ['H', 'R', 'G', 'T']:
                 s_smooth = rdp_simplify(s, epsilon=0.10)
             else:
                 s_smooth = rdp_simplify(s, epsilon=0.22)

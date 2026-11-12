@@ -17,6 +17,8 @@ def build_comparison_chart(font_path, output_png):
     x_h = data.get('x_height', 11.3)
 
     items = [
+        ('v', "v minuscola: calice singolo a 'U' morbida con fondo tangente al rigo base,\nrisalita fluida a destra e braccetto a vita (elimina doppia gobba/falsa 'm' o 'n')."),
+        ('T', "T corsiva maiuscola: 2 tratti calligrafici classici indipendenti:\ncappello superiore a onda flessuosa + asta centrale verticale con ricciolo al piede."),
         ('m', "m minuscola: 3 campate fluide con retrace aderente sul fusto,\nnessuna corda diagonale che taglia i contatori interni."),
         ('h', "h minuscola: fusto continuo dritto fino al rigo di base,\narco a piena altezza x-height e curva d'uscita sul rigo."),
         ('G', "G corsiva maiuscola: proporzionata a tutta altezza cap-height (21u),\nasola inferiore sotto il rigo e raccordo orizzontale."),

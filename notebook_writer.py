@@ -232,13 +232,30 @@ class NotebookLayout:
 
             prev_is_lower = prev_char is not None and (prev_char.islower() or prev_char in 'àèéìòù')
             is_cursive = (char.islower() or char in 'àèéìòù') and c_idx > 0 and prev_is_lower and prev_exit is not None
+            HIGH_EXIT_CHARS = set('vbow')
+            STEM_ENTRY_CHARS = set('iujnmutr')
             if is_cursive:
+                if prev_char in HIGH_EXIT_CHARS and char in STEM_ENTRY_CHARS:
+                    peak_idx = max(range(len(s0)), key=lambda k: s0[k][1])
+                    if peak_idx > 0 and s0[peak_idx][1] >= s0[0][1] + 2.0:
+                        s0 = s0[peak_idx:]
+                        raw_strokes = [s0] + list(raw_strokes[1:])
+                        p_entry = s0[0]
                 target_dx = 0.35
                 match_x = prev_exit[0] - p_entry[0] * self.scale + target_dx
                 prev_max_x = prev_char_x + max([p[0] for s in prev_raw for p in s]) * self.scale
                 curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
-                min_adv = max(prev_char_x + 1.5, prev_max_x - curr_min_x + 0.25)
+                min_gap = 0.45 if (prev_char, char) in [('r', 'b'), ('e', 'r'), ('b', 'e')] else 0.25
+                min_adv = max(prev_char_x + 1.5, prev_max_x - curr_min_x + min_gap)
                 char_x = max(match_x, min_adv, cur_x)
+            elif prev_char == "'":
+                prev_max_x = prev_char_x + max([p[0] for s in prev_raw for p in s]) * self.scale
+                curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
+                char_x = max(prev_max_x - curr_min_x + 1.10, cur_x)
+            elif prev_raw is not None:
+                prev_max_x = prev_char_x + max([p[0] for s in prev_raw for p in s]) * self.scale
+                curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
+                char_x = max(prev_max_x - curr_min_x + 0.40, cur_x)
             else:
                 char_x = cur_x
 
@@ -325,13 +342,25 @@ class NotebookLayout:
                     prev_is_lower = prev_char is not None and (prev_char.islower() or prev_char in 'àèéìòù')
                     is_cursive_lower = (char.islower() or char in 'àèéìòù') and prev_is_lower and (prev_exit is not None)
 
+                    HIGH_EXIT_CHARS = set('vbow')
+                    STEM_ENTRY_CHARS = set('iujnmutr')
+                    if is_cursive_lower and prev_char in HIGH_EXIT_CHARS and char in STEM_ENTRY_CHARS:
+                        peak_idx = max(range(len(s0)), key=lambda k: s0[k][1])
+                        if peak_idx > 0 and s0[peak_idx][1] >= s0[0][1] + 2.0:
+                            s0 = s0[peak_idx:]
+                            raw_strokes = [s0] + list(raw_strokes[1:])
+                            p_entry = s0[0]
+
                     # Authentic calligraphy pen-lift rules:
                     # 1. Oval letters starting at waist counter (a, o, c, d, g, q) when preceded by baseline exit
-                    # 2. Steep vertical step (dy > 1.2 mm) to prevent cross-cutting diagonals
+                    # 2. High-exit letters before loop/oval letters (e, a, o) lift pen cleanly to preserve full loop
+                    # 3. Steep vertical step (dy > 1.2 mm) to prevent cross-cutting diagonals
                     TOP_ENTRY_CHARS = set('aocdgqàò')
                     wants_pen_lift = False
                     if is_cursive_lower:
                         if char in TOP_ENTRY_CHARS and (p_entry[1] * self.scale >= 1.2) and (prev_exit[1] - baseline_y <= 1.0):
+                            wants_pen_lift = True
+                        elif prev_char in HIGH_EXIT_CHARS and char in ('e', 'a', 'o', 'c', 'd', 'g', 'q'):
                             wants_pen_lift = True
                         elif prev_exit is not None and abs(p_entry[1] * self.scale - (prev_exit[1] - baseline_y)) > 1.2:
                             wants_pen_lift = True
@@ -341,13 +370,15 @@ class NotebookLayout:
                         match_x = prev_exit[0] - p_entry[0] * self.scale + target_dx
                         prev_max_x = prev_char_bed_x + max([p[0] for s in prev_raw_strokes for p in s]) * self.scale
                         curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
-                        min_adv = max(prev_char_bed_x + 1.5, prev_max_x - curr_min_x + 0.25)
+                        min_gap = 0.45 if (prev_char, char) in [('r', 'b'), ('e', 'r'), ('b', 'e')] else 0.25
+                        min_adv = max(prev_char_bed_x + 1.5, prev_max_x - curr_min_x + min_gap)
                         char_bed_x = max(match_x, min_adv, current_line_x)
                     elif prev_char_bed_x is not None and prev_raw_strokes is not None:
                         # Natural inter-letter spacing with pen lift inside a word
                         prev_max_x = prev_char_bed_x + max([p[0] for s in prev_raw_strokes for p in s]) * self.scale
                         curr_min_x = min([p[0] for s in raw_strokes for p in s]) * self.scale
-                        char_bed_x = max(prev_max_x - curr_min_x + 0.40, current_line_x)
+                        extra_gap = 1.10 if prev_char == "'" else 0.40
+                        char_bed_x = max(prev_max_x - curr_min_x + extra_gap, current_line_x)
                     else:
                         char_bed_x = current_line_x
 
@@ -424,8 +455,13 @@ class NotebookLayout:
                             if (-0.2 <= dx <= 4.0) and (dy <= 1.2) and exit_valid and entry_valid:
                                 # Smooth natural cursive ligature
                                 if dx > 0.15:
-                                    scoop_y = min(p_curr_exit[1], p_curr_entry[1], baseline_y + 1.2 * self.scale)
-                                    mid = (round(p_curr_exit[0] + 0.5 * dx, 3), round(scoop_y, 3))
+                                    if (p_curr_exit[1] - baseline_y >= 1.2) and (p_curr_entry[1] - baseline_y >= 1.2):
+                                        # High waist ligature: stay at waist level
+                                        mid_y = (p_curr_exit[1] + p_curr_entry[1]) * 0.5
+                                    else:
+                                        # Baseline scoop
+                                        mid_y = min(p_curr_exit[1], p_curr_entry[1], baseline_y + 1.2 * self.scale)
+                                    mid = (round(p_curr_exit[0] + 0.5 * dx, 3), round(mid_y, 3))
                                     word_body_stroke.append(mid)
                                 word_body_stroke.extend(primary_s)
                             else:
